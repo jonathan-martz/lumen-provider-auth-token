@@ -32,34 +32,28 @@ class AuthTokenServiceProvider extends ServiceProvider
         $this->app['auth']->viaRequest('api', function ($request) {
             $validator = Validator::make($request->all(), [
                 'auth.userid' => 'required|integer',
+                'auth.topic' => 'required|string',
                 'auth.token' => 'required|string|size:512'
             ]);
 
-            $messages = $validator->errors()->getMessages();
+            $users = DB::table('users')
+                ->where('id', '=', $request->input('auth.userid'));
 
-            if(!is_bool($messages)) {
+            $count = $users->count();
 
-                $messages = (array)$messages;
-                $count = count($messages);
-                if($count === 0) {
-                    $users = DB::table('users')
-                        ->where('id', '=', $request->input('auth.userid'));
-
-                    $count = $users->count();
-
-                    if($count === 1) {
-                        $user = new User((array)$users->first());
-                        if($user->getActive()) {
-                            $tokens = DB::table('topic_tokens')
-                                ->where('UID', '=', $user->getAuthIdentifier())
-                                ->where('token', '=', $request->input('auth.token'));
-                            if($tokens->count() === 1) {
-                                return $user;
-                            }
-                        }
+            if($count === 1) {
+                $user = new User((array)$users->first());
+                if($user->getActive()) {
+                    $tokens = DB::table('topic_token')
+                        ->where('userid', '=', $user->getAuthIdentifier())
+                        ->where('token', '=', $request->input('auth.token'))
+                        ->where('topic', '=', $request->input('auth.topic'));
+                    if($tokens->count() === 1) {
+                        return $user;
                     }
                 }
             }
+
 
             return null;
         });
