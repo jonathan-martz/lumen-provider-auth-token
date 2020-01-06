@@ -54,7 +54,6 @@ class AuthTokenServiceProvider extends ServiceProvider
                 }
             }
 
-
             return null;
         });
     }
