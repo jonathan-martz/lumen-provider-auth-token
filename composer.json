@@ -5,7 +5,7 @@
     "require": {
         "php": "^7.3|^7.4",
         "illuminate/support": "^7.3",
-        "jonathan-martz/lumen-model-user": "^0.2"
+        "jonathan-martz/lumen-model-user": "dev-master"
     },
     "autoload": {
         "classmap": [
